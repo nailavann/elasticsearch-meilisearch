@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'elasticsearch' => [
+        'host' => env('ELASTICSEARCH_HOST'),
+    ],
+
+    'meilisearch' => [
+        'host' => env('MEILISEARCH_HOST'),
+        'key' => env('MEILISEARCH_KEY'),
+    ],
+
 ];
