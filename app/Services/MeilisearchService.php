@@ -32,7 +32,7 @@ class MeilisearchService
     public function createIndex(string $index, ?string $primaryKey = null)
     {
         $body = ['uid' => $index];
-        
+
         if ($primaryKey) {
             $body['primaryKey'] = $primaryKey;
         }
@@ -127,11 +127,11 @@ class MeilisearchService
     /**
      * Simple text search
      */
-    public function searchSimple(string $index, string $query, int $limit = 10)
+    public function searchSimple(string $index, string $query, int $limit = 10, array $additionalOptions = [])
     {
-        return $this->search($index, $query, [
+        return $this->search($index, $query, array_merge([
             'limit' => $limit,
-        ]);
+        ], $additionalOptions));
     }
 
     /**
@@ -282,4 +282,3 @@ class MeilisearchService
         ];
     }
 }
-
