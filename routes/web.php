@@ -3,6 +3,7 @@
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\StatsController;
+use App\Http\Controllers\IndexController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,10 +29,10 @@ Route::get('/delete', function () {
 Route::get('/compare-search', [SearchController::class, 'compareSearch']);
 
 // Index blogs
-Route::post('/index-blogs', [App\Http\Controllers\IndexController::class, 'create']);
+Route::post('/index-blogs', [IndexController::class, 'create']);
 
 // Delete index
-Route::post('/delete-index', [App\Http\Controllers\IndexController::class, 'delete']);
+Route::post('/delete-index', [IndexController::class, 'delete']);
 
 // Health check endpoints
 Route::get('/health/elasticsearch', [HealthController::class, 'elasticsearch']);

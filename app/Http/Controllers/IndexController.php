@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\IndexCreateRequest;
 use App\Models\Blog;
 use App\Services\ElasticsearchService;
 use App\Services\MeilisearchService;
@@ -62,10 +63,12 @@ class IndexController extends Controller
     /**
      * Index blogs to both Elasticsearch and Meilisearch
      */
-    public function create(Request $request)
+    public function create(IndexCreateRequest $request)
     {
         try {
-            $chunkSize = $request->input('chunk_size', 500);
+            $validated = $request->validated();
+
+            $chunkSize = $validated['chunk_size'] ?? 500;
 
             $totalBlogs = Blog::query()->count();
 

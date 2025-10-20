@@ -185,12 +185,15 @@
                             <a href="/search" class="btn btn-custom btn-primary-custom">
                                 <i class="fas fa-search"></i> Search
                             </a>
+                            <!-- Production: Index management disabled for security -->
+                            <!--
                             <a href="/index" class="btn btn-custom btn-success-custom">
                                 <i class="fas fa-database"></i> Create Index
                             </a>
                             <a href="/delete" class="btn btn-custom btn-danger-custom">
                                 <i class="fas fa-trash"></i> Delete Index
                             </a>
+                            -->
                         </div>
 
                         <div class="row mt-4">
