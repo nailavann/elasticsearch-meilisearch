@@ -153,7 +153,21 @@ class MeilisearchService
         $response = Http::withHeaders($this->headers())
             ->get("{$this->host}/indexes/{$index}/stats");
 
-        return $this->handleResponse($response);
+        $result = $this->handleResponse($response);
+
+        // Additional handling for NaN values in Meilisearch response
+        if ($result['success'] && isset($result['data'])) {
+            $data = $result['data'];
+
+            // Handle NaN values in size fields
+            if (isset($data['rawDocumentDbSize']) && ($data['rawDocumentDbSize'] === 'NaN' || $data['rawDocumentDbSize'] === null)) {
+                $data['rawDocumentDbSize'] = 0;
+            }
+
+            $result['data'] = $data;
+        }
+
+        return $result;
     }
 
     /**

@@ -197,7 +197,7 @@
                             <div class="col-12">
                                 <div class="card border-info">
                                     <div class="card-header bg-info text-white">
-                                        <h5 class="mb-0"><i class="fas fa-heartbeat"></i> Servis Durumu</h5>
+                                        <h5 class="mb-0"><i class="fas fa-heartbeat"></i> Service Status</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
@@ -230,6 +230,55 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Index Statistics Section -->
+                                <div class="card border-warning mt-4">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Index Statistics</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row" id="stats-container">
+                                            <div class="col-md-4 text-center">
+                                                <div class="p-3 border rounded">
+                                                    <i class="fas fa-database fa-2x text-info mb-2"></i>
+                                                    <h6>Database</h6>
+                                                    <div id="db-stats">
+                                                        <div class="spinner-border spinner-border-sm text-info" role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 text-center">
+                                                <div class="p-3 border rounded">
+                                                    <i class="fas fa-server fa-2x text-primary mb-2"></i>
+                                                    <h6>Elasticsearch</h6>
+                                                    <div id="es-stats">
+                                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 text-center">
+                                                <div class="p-3 border rounded">
+                                                    <i class="fas fa-rocket fa-2x text-success mb-2"></i>
+                                                    <h6>Meilisearch</h6>
+                                                    <div id="meili-stats">
+                                                        <div class="spinner-border spinner-border-sm text-success" role="status">
+                                                            <span class="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-center mt-3">
+                                            <button onclick="loadStats()" class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-sync-alt"></i> Refresh Stats
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -255,17 +304,17 @@
                     let alertType = '';
 
                     if (data.success) {
-                        message = `${data.service} servisi çalışıyor! ✅\n\nDurum: ${data.status}\nZaman: ${new Date(data.timestamp).toLocaleString('tr-TR')}`;
+                        message = `${data.service} is running! ✅\n\nStatus: ${data.status}\nTime: ${new Date(data.timestamp).toLocaleString('en-US')}`;
                         alertType = 'success';
                     } else {
-                        message = `${data.service} servisi çalışmıyor! ❌\n\nHata: ${data.error?.message || 'Bilinmeyen hata'}\nZaman: ${new Date(data.timestamp).toLocaleString('tr-TR')}`;
+                        message = `${data.service} is not running! ❌\n\nError: ${data.error?.message || 'Unknown error'}\nTime: ${new Date(data.timestamp).toLocaleString('en-US')}`;
                         alertType = 'danger';
                     }
 
                     showAlert(message, alertType);
                 })
                 .fail(function() {
-                    showAlert(`${service} kontrolü başarısız! Ağ hatası oluştu.`, 'warning');
+                    showAlert(`${service} health check failed! Network error occurred.`, 'warning');
                 })
                 .always(function() {
                     button.html(originalText);
@@ -320,6 +369,64 @@
             $('.custom-alert').on('hidden.bs.modal', function() {
                 $(this).remove();
             });
+        }
+
+        // Sayfa yüklendiğinde istatistikleri getir
+        $(document).ready(function() {
+            loadStats();
+        });
+
+        function loadStats() {
+            // Tüm spinner'ları göster
+            $('#db-stats, #es-stats, #meili-stats').html(`
+                <div class="spinner-border spinner-border-sm text-info" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            `);
+
+            $.get('/stats/blogs')
+                .done(function(data) {
+                    displayStats(data);
+                })
+                .fail(function() {
+                    $('#db-stats, #es-stats, #meili-stats').html(`
+                        <span class="text-danger">Failed to load</span>
+                    `);
+                });
+        }
+
+        function displayStats(data) {
+            // Database stats
+            const dbStats = data.database;
+            $('#db-stats').html(`
+                <div class="mb-1"><strong>${numberFormat(dbStats.total_blogs)}</strong> Total Blogs</div>
+            `);
+
+            // Elasticsearch stats
+            const esStats = data.elasticsearch;
+            if (esStats.success) {
+                $('#es-stats').html(`
+                    <div class="mb-1"><strong>${numberFormat(esStats.total_documents)}</strong> Documents</div>
+                    <div class="text-muted">${esStats.size}</div>
+                `);
+            } else {
+                $('#es-stats').html(`<span class="text-danger">${esStats.error}</span>`);
+            }
+
+            // Meilisearch stats
+            const meiliStats = data.meilisearch;
+            if (meiliStats.success) {
+                $('#meili-stats').html(`
+                    <div class="mb-1"><strong>${numberFormat(meiliStats.total_documents)}</strong> Documents</div>
+                    <div class="text-muted">${meiliStats.size}</div>
+                `);
+            } else {
+                $('#meili-stats').html(`<span class="text-danger">${meiliStats.error}</span>`);
+            }
+        }
+
+        function numberFormat(number) {
+            return new Intl.NumberFormat('en-US').format(number);
         }
     </script>
 </body>

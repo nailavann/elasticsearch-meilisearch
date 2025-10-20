@@ -20,11 +20,11 @@ class ElasticsearchService
     public function createIndex(string $index, array $mappings = [], array $settings = [])
     {
         $body = [];
-        
+
         if (!empty($mappings)) {
             $body['mappings'] = $mappings;
         }
-        
+
         if (!empty($settings)) {
             $body['settings'] = $settings;
         }
@@ -155,6 +155,16 @@ class ElasticsearchService
     }
 
     /**
+     * Get index statistics
+     */
+    public function getStats(string $index)
+    {
+        $response = Http::get("{$this->host}/{$index}/_stats");
+
+        return $this->handleResponse($response);
+    }
+
+    /**
      * Index blogs from database
      */
     public function indexBlogs(int $chunkSize = 500): array
@@ -266,4 +276,3 @@ class ElasticsearchService
         ];
     }
 }
-

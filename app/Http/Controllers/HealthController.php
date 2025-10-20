@@ -21,16 +21,30 @@ class HealthController extends Controller
      */
     public function elasticsearch()
     {
-        $response = $this->elasticsearch->health();
+        try {
+            $response = $this->elasticsearch->health();
 
-        return response()->json([
-            'service' => 'Elasticsearch',
-            'status' => $response['success'] ? 'healthy' : 'unhealthy',
-            'success' => $response['success'],
-            'data' => $response['data'] ?? null,
-            'error' => $response['error'] ?? null,
-            'timestamp' => now()->toISOString()
-        ]);
+            return response()->json([
+                'service' => 'Elasticsearch',
+                'status' => $response['success'] ? 'healthy' : 'unhealthy',
+                'success' => $response['success'],
+                'data' => $response['data'] ?? null,
+                'error' => $response['error'] ?? null,
+                'timestamp' => now()->toISOString()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'service' => 'Elasticsearch',
+                'status' => 'unhealthy',
+                'success' => false,
+                'data' => null,
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'code' => $e->getCode()
+                ],
+                'timestamp' => now()->toISOString()
+            ], 500);
+        }
     }
 
     /**
@@ -38,15 +52,29 @@ class HealthController extends Controller
      */
     public function meilisearch()
     {
-        $response = $this->meilisearch->health();
+        try {
+            $response = $this->meilisearch->health();
 
-        return response()->json([
-            'service' => 'Meilisearch',
-            'status' => $response['success'] ? 'healthy' : 'unhealthy',
-            'success' => $response['success'],
-            'data' => $response['data'] ?? null,
-            'error' => $response['error'] ?? null,
-            'timestamp' => now()->toISOString()
-        ]);
+            return response()->json([
+                'service' => 'Meilisearch',
+                'status' => $response['success'] ? 'healthy' : 'unhealthy',
+                'success' => $response['success'],
+                'data' => $response['data'] ?? null,
+                'error' => $response['error'] ?? null,
+                'timestamp' => now()->toISOString()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'service' => 'Meilisearch',
+                'status' => 'unhealthy',
+                'success' => false,
+                'data' => null,
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'code' => $e->getCode()
+                ],
+                'timestamp' => now()->toISOString()
+            ], 500);
+        }
     }
 }

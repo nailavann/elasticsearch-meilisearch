@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\HealthController;
+use App\Http\Controllers\StatsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,3 +36,6 @@ Route::post('/delete-index', [App\Http\Controllers\IndexController::class, 'dele
 // Health check endpoints
 Route::get('/health/elasticsearch', [HealthController::class, 'elasticsearch']);
 Route::get('/health/meilisearch', [HealthController::class, 'meilisearch']);
+
+// Index statistics
+Route::get('/stats/blogs', [StatsController::class, 'blogs']);
